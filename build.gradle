@@ -3,9 +3,20 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+sourceSets {
+    main{
+        java{
+            srcDir 'src/java'
+        }
+        resources{
+            srcDir 'src/resources'
+        }
+    }
+}
+
 jar {
     manifest {
-        attributes 'Main-Class': 'net.mario.App'
+        attributes 'Main-Class': 'App'
     }
 }
 
@@ -19,3 +30,15 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
 }
+
+
+task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
+    //classifier = '/resources'
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+    manifest {
+        attributes 'Main-Class': 'App'
+    }
+}
+
